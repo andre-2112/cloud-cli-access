@@ -25,7 +25,9 @@
       "Bash(cygpath:*)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Cloud CLI Access (CCA) framework\n\nComplete implementation of secure, self-service CLI authentication framework using AWS IAM Identity Center.\n\nFeatures:\n- Self-service user registration with admin approval workflow\n- CCC CLI tool for browser-based OAuth authentication\n- Lambda-based registration and approval handler\n- S3-hosted registration form\n- Comprehensive documentation and guides\n- Minimal infrastructure (3 AWS services)\n\nInfrastructure deployed:\n- IAM Identity Center permission set and group\n- Lambda function with Function URL\n- S3 bucket for static website hosting\n- SES verified email identity\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Cloud CLI Access (CCA) framework\n\nComplete implementation of secure, self-service CLI authentication framework using AWS IAM Identity Center.\n\nFeatures:\n- Self-service user registration with admin approval workflow\n- CCC CLI tool for browser-based OAuth authentication\n- Lambda-based registration and approval handler\n- S3-hosted registration form\n- Comprehensive documentation and guides\n- Minimal infrastructure (3 AWS services)\n\nInfrastructure deployed:\n- IAM Identity Center permission set and group\n- Lambda function with Function URL\n- S3 bucket for static website hosting\n- SES verified email identity\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git config:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
