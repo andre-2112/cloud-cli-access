@@ -203,7 +203,10 @@ Test 3: EC2 DescribeRegions ✓ Success
 | [INSTALL.md](./INSTALL.md) | Installation guide |
 | [CCA - Cloud CLI Access - Implementation Guide](./docs/CCA%20-%20%20Cloud%20CLI%20Access%20-%20Implementation%20Guide.md) | Complete deployment guide |
 | [CCA - Deployment Summary](./docs/CCA%20-%20Deployment%20Summary.md) | Deployment summary and configuration |
-| [AWS Resources Inventory.md](./docs/AWS%20Resources%20Inventory.md) | Complete resource inventory |
+| [TEST-RESULTS.md](./docs/TEST-RESULTS.md) | End-to-end test results |
+| [Addendum - AWS Resources Inventory](./docs/Addendum%20-%20AWS%20Resources%20Inventory.md) | Complete resource inventory |
+| [Addendum - User Management Guide](./docs/Addendum%20-%20User%20Management%20Guide.md) | User management and administration |
+| [Addendum - Console Navigation Guide](./docs/Addendum%20-%20Console%20Navigation%20Guide.md) | AWS Console troubleshooting |
 | [Addendum - REST API Authentication.md](./docs/Addendum%20-%20REST%20API%20Authentication.md) | REST API client integration |
 | [Addendum - Github Actions Integration.md](./docs/Addendum%20-%20Github%20Actions%20Integration.md) | CI/CD with GitHub Actions |
 | [Addendum - Custom Domain Setup.md](./docs/Addendum%20-%20Custom%20Domain%20Setup.md) | Custom domain configuration |
@@ -220,7 +223,10 @@ cloud-cli-access/
 ├── docs/                         # Documentation
 │   ├── CCA -  Cloud CLI Access - Implementation Guide.md  # Full deployment guide
 │   ├── CCA - Deployment Summary.md
-│   ├── AWS Resources Inventory.md
+│   ├── TEST-RESULTS.md          # End-to-end test results
+│   ├── Addendum - AWS Resources Inventory.md
+│   ├── Addendum - User Management Guide.md
+│   ├── Addendum - Console Navigation Guide.md
 │   ├── Addendum - REST API Authentication.md
 │   ├── Addendum - Github Actions Integration.md
 │   └── Addendum - Custom Domain Setup.md
@@ -510,7 +516,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [Installation Guide](./INSTALL.md)
 - [Deployment Guide](./docs/CCA%20-%20%20Cloud%20CLI%20Access%20-%20Implementation%20Guide.md)
-- [AWS Resources](./docs/AWS%20Resources%20Inventory.md)
+- [Test Results](./docs/TEST-RESULTS.md)
+- [AWS Resources](./docs/Addendum%20-%20AWS%20Resources%20Inventory.md)
+- [User Management](./docs/Addendum%20-%20User%20Management%20Guide.md)
+- [Console Navigation](./docs/Addendum%20-%20Console%20Navigation%20Guide.md)
 - [REST API Guide](./docs/Addendum%20-%20REST%20API%20Authentication.md)
 - [GitHub Actions](./docs/Addendum%20-%20Github%20Actions%20Integration.md)
 - [Custom Domains](./docs/Addendum%20-%20Custom%20Domain%20Setup.md)
