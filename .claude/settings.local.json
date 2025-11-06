@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(aws:*)",
+      "Bash(pip3 --version:*)",
+      "Bash(export ADMIN_EMAIL=\"info@2112-lab.com\")",
+      "Bash(export FROM_EMAIL=\"info@2112-lab.com\")",
+      "Bash(echo:*)",
+      "Bash(/tmp/cca-config.env)",
+      "Bash(export IDENTITY_STORE_ID=\"d-9066117351\")",
+      "Bash(export SSO_INSTANCE_ARN=\"arn:aws:sso:::instance/ssoins-72232e1b5b84475a\")",
+      "Bash(export SSO_REGION=\"us-east-1\")",
+      "Bash(export AWS_ACCOUNT_ID=\"211050572089\":*)",
+      "Bash(export SSO_START_URL=\"https://d-9066117351.awsapps.com/start\")",
+      "Bash(source:*)",
+      "Bash(zip:*)",
+      "Bash(python3:*)",
+      "Bash(/tmp/lambda-function.json)",
+      "Bash(/tmp/function-url.json)",
+      "Bash(REGISTRATION_URL=\"http://cca-registration-1762463059.s3-website-us-east-1.amazonaws.com/registration.html\":*)",
+      "Bash(pip3 install:*)",
+      "Bash(ccc:*)",
+      "Bash(ccc --help:*)",
+      "Bash(cygpath:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Cloud CLI Access (CCA) framework\n\nComplete implementation of secure, self-service CLI authentication framework using AWS IAM Identity Center.\n\nFeatures:\n- Self-service user registration with admin approval workflow\n- CCC CLI tool for browser-based OAuth authentication\n- Lambda-based registration and approval handler\n- S3-hosted registration form\n- Comprehensive documentation and guides\n- Minimal infrastructure (3 AWS services)\n\nInfrastructure deployed:\n- IAM Identity Center permission set and group\n- Lambda function with Function URL\n- S3 bucket for static website hosting\n- SES verified email identity\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

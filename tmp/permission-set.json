@@ -1,0 +1,9 @@
+{
+    "PermissionSet": {
+        "Name": "CCA-CLI-Access",
+        "PermissionSetArn": "arn:aws:sso:::permissionSet/ssoins-72232e1b5b84475a/ps-722336e927a8f2d5",
+        "Description": "Cloud CLI Access - API only, no console",
+        "CreatedDate": "2025-11-06T20:37:29.563000+00:00",
+        "SessionDuration": "PT12H"
+    }
+}

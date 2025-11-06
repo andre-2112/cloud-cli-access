@@ -1,0 +1,21 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "CCA-Lambda-Role",
+        "RoleId": "AROATCI4YFE4S5GNCUXY7",
+        "Arn": "arn:aws:iam::211050572089:role/CCA-Lambda-Role",
+        "CreateDate": "2025-11-06T20:48:17+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+    }
+}

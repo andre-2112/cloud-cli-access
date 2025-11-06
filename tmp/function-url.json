@@ -1,0 +1,18 @@
+{
+    "FunctionUrl": "https://kmfuod67kbaeombcknzrjbtrmi0qqncd.lambda-url.us-east-1.on.aws/",
+    "FunctionArn": "arn:aws:lambda:us-east-1:211050572089:function:cca-registration",
+    "AuthType": "NONE",
+    "Cors": {
+        "AllowHeaders": [
+            "*"
+        ],
+        "AllowMethods": [
+            "GET",
+            "POST"
+        ],
+        "AllowOrigins": [
+            "*"
+        ]
+    },
+    "CreationTime": "2025-11-06T20:58:52.172825133Z"
+}

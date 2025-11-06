@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud CLI Access - Registration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .container {
+            background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px; width: 100%; padding: 40px;
+        }
+        h1 { color: #333; font-size: 28px; margin-bottom: 10px; text-align: center; }
+        .subtitle { color: #666; text-align: center; margin-bottom: 30px; font-size: 14px; }
+        .info-box {
+            background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px;
+            margin-bottom: 25px; border-radius: 4px; font-size: 14px;
+        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; color: #333; font-weight: 500; margin-bottom: 8px; font-size: 14px; }
+        input {
+            width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px;
+            font-size: 14px; transition: border-color 0.3s;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        .btn {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .message {
+            margin-top: 20px; padding: 15px; border-radius: 6px; font-size: 14px; display: none;
+        }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        .footer { margin-top: 30px; text-align: center; color: #999; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloud CLI Access</h1>
+        <p class="subtitle">Register for CLI access to AWS resources</p>
+        <div class="info-box">
+            <strong>Note:</strong> After registration, an administrator will review your request.
+            You'll receive an email to set your password once approved.
+        </div>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required
+                       pattern="[a-zA-Z0-9._-]+" placeholder="john.doe"
+                       title="Letters, numbers, dots, hyphens, and underscores only">
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+                <label for="first_name">First Name *</label>
+                <input type="text" id="first_name" name="first_name" required placeholder="John">
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name *</label>
+                <input type="text" id="last_name" name="last_name" required placeholder="Doe">
+            </div>
+            <button type="submit" class="btn" id="submitBtn">Register</button>
+        </form>
+        <div id="message" class="message"></div>
+        <div class="footer">
+            <p>Your request will be reviewed by an administrator</p>
+            <p>You'll receive an email once your account is approved</p>
+        </div>
+    </div>
+    <script>
+        const API_URL = 'https://kmfuod67kbaeombcknzrjbtrmi0qqncd.lambda-url.us-east-1.on.aws/';
+        const form = document.getElementById('registrationForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value
+            };
+            try {
+                const response = await fetch(`${API_URL}register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage('Registration submitted successfully! An administrator will review your request. You will receive an email once approved.', 'success');
+                    form.reset();
+                } else {
+                    showMessage('Error: ' + (data.error || 'Registration failed'), 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Register';
+                }
+            } catch (error) {
+                showMessage('Network error: ' + error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Register';
+            }
+        });
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
