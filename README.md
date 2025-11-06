@@ -96,7 +96,7 @@ Cloud CLI Access (CCA) is a **simplified, cost-effective authentication framewor
 
 ### For Administrators
 
-See [Prompt - 1.md](./docs/Prompt%20-%201.md) for complete deployment instructions.
+See [CCA - Cloud CLI Access - Implementation Guide](./docs/CCA%20-%20%20Cloud%20CLI%20Access%20-%20Implementation%20Guide.md) for complete deployment instructions.
 
 **Quick deployment checklist:**
 - [ ] Enable IAM Identity Center
@@ -201,8 +201,8 @@ Test 3: EC2 DescribeRegions ✓ Success
 | Document | Description |
 |----------|-------------|
 | [INSTALL.md](./INSTALL.md) | Installation guide |
-| [Prompt - 1.md](./docs/Prompt%20-%201.md) | Complete deployment guide |
-| [CCA Deployment Summary.md](./docs/CCA%20Deployment%20Summary.md) | Deployment summary and configuration |
+| [CCA - Cloud CLI Access - Implementation Guide](./docs/CCA%20-%20%20Cloud%20CLI%20Access%20-%20Implementation%20Guide.md) | Complete deployment guide |
+| [CCA - Deployment Summary](./docs/CCA%20-%20Deployment%20Summary.md) | Deployment summary and configuration |
 | [AWS Resources Inventory.md](./docs/AWS%20Resources%20Inventory.md) | Complete resource inventory |
 | [Addendum - REST API Authentication.md](./docs/Addendum%20-%20REST%20API%20Authentication.md) | REST API client integration |
 | [Addendum - Github Actions Integration.md](./docs/Addendum%20-%20Github%20Actions%20Integration.md) | CI/CD with GitHub Actions |
@@ -218,8 +218,8 @@ cloud-cli-access/
 ├── INSTALL.md                    # Installation guide
 ├── LICENSE                       # MIT License
 ├── docs/                         # Documentation
-│   ├── Prompt - 1.md            # Full deployment guide
-│   ├── CCA Deployment Summary.md
+│   ├── CCA -  Cloud CLI Access - Implementation Guide.md  # Full deployment guide
+│   ├── CCA - Deployment Summary.md
 │   ├── AWS Resources Inventory.md
 │   ├── Addendum - REST API Authentication.md
 │   ├── Addendum - Github Actions Integration.md
@@ -509,7 +509,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Quick Links
 
 - [Installation Guide](./INSTALL.md)
-- [Deployment Guide](./docs/Prompt%20-%201.md)
+- [Deployment Guide](./docs/CCA%20-%20%20Cloud%20CLI%20Access%20-%20Implementation%20Guide.md)
 - [AWS Resources](./docs/AWS%20Resources%20Inventory.md)
 - [REST API Guide](./docs/Addendum%20-%20REST%20API%20Authentication.md)
 - [GitHub Actions](./docs/Addendum%20-%20Github%20Actions%20Integration.md)
