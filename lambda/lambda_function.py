@@ -45,14 +45,19 @@ def lambda_handler(event, context):
 
     # Determine action based on path
     path = event.get('rawPath', event.get('path', ''))
+    print(f"Request path: {path}")
 
     if path == '/register' or path == '/':
+        print("Handling registration request")
         return handle_registration(event)
     elif path == '/approve':
+        print("Handling approval request")
         return handle_approval(event)
     elif path == '/deny':
+        print("Handling denial request")
         return handle_denial(event)
     else:
+        print(f"Unknown path: {path}")
         return {
             'statusCode': 404,
             'headers': CORS_HEADERS,
@@ -88,6 +93,8 @@ def handle_registration(event):
         'expires_at': (datetime.utcnow() + timedelta(days=7)).isoformat()
     }
 
+    print(f"Processing registration for: {user_data['username']} ({user_data['email']})")
+
     approve_token = create_signed_token(user_data, 'approve')
     deny_token = create_signed_token(user_data, 'deny')
 
@@ -98,9 +105,13 @@ def handle_registration(event):
     approve_url = f"{protocol}://{lambda_url}/approve?token={approve_token}"
     deny_url = f"{protocol}://{lambda_url}/deny?token={deny_token}"
 
+    print(f"Approve URL: {approve_url}")
+    print(f"Deny URL: {deny_url}")
+
     # Send email to admin
     try:
         send_admin_email(user_data, approve_url, deny_url)
+        print(f"Registration completed successfully for: {user_data['username']}")
     except Exception as e:
         print(f"Error sending email: {e}")
         return error_response(f'Failed to send email: {str(e)}', 500)
@@ -153,17 +164,23 @@ def handle_approval(event):
 
     # Create user in Identity Center
     try:
+        print(f"Creating user: {user_data['username']} ({user_data['email']})")
         user_id = create_identity_center_user(user_data)
+        print(f"User created successfully with ID: {user_id}")
 
         # Add user to group
+        print(f"Adding user to group: {CLI_GROUP_ID}")
         identitystore.create_group_membership(
             IdentityStoreId=IDENTITY_STORE_ID,
             GroupId=CLI_GROUP_ID,
             MemberId={'UserId': user_id}
         )
+        print(f"User added to group successfully")
 
         # Send welcome email
+        print(f"Sending welcome email to: {user_data['email']}")
         send_welcome_email(user_data)
+        print(f"Welcome email sent successfully")
 
         return html_response(f'''
             <html>
@@ -189,7 +206,7 @@ def handle_approval(event):
                     <p><strong>Name:</strong> {user_data["first_name"]} {user_data["last_name"]}</p>
                 </div>
                 <p>User has been created successfully.</p>
-                <p>They will receive an email to set their password.</p>
+                <p>They will receive a welcome email with instructions to set their password via the SSO portal.</p>
             </body>
             </html>
         ''', 200)
@@ -383,17 +400,25 @@ These links will expire in 7 days.
 </html>
 """
 
-    ses.send_email(
-        Source=FROM_EMAIL,
-        Destination={'ToAddresses': [ADMIN_EMAIL]},
-        Message={
-            'Subject': {'Data': subject},
-            'Body': {
-                'Text': {'Data': text_body},
-                'Html': {'Data': html_body}
+    try:
+        print(f"Sending admin approval email to: {ADMIN_EMAIL}")
+        print(f"Email FROM address: {FROM_EMAIL}")
+        response = ses.send_email(
+            Source=FROM_EMAIL,
+            Destination={'ToAddresses': [ADMIN_EMAIL]},
+            Message={
+                'Subject': {'Data': subject},
+                'Body': {
+                    'Text': {'Data': text_body},
+                    'Html': {'Data': html_body}
+                }
             }
-        }
-    )
+        )
+        print(f"Admin email sent successfully. MessageId: {response.get('MessageId')}")
+    except Exception as e:
+        print(f"Error sending admin email: {e}")
+        print(f"Error details: {type(e).__name__}: {str(e)}")
+        raise
 
 def send_welcome_email(user_data):
     """Send welcome email to approved user"""
@@ -409,8 +434,13 @@ Username: {user_data['username']}
 Email: {user_data['email']}
 
 IMPORTANT - Set Your Password:
-You will receive a separate email from AWS IAM Identity Center with a link to set your password.
-Please check your inbox (and spam folder) for an email with the subject "Invitation to join AWS IAM Identity Center".
+AWS does not automatically send a password setup email when users are created via API.
+To set your password, follow these steps:
+
+1. Go to: {SSO_START_URL}
+2. Enter your username: {user_data['username']}
+3. Click "Forgot password?"
+4. Follow the password reset instructions sent to your email
 
 After setting your password, you can log in using the CCC CLI tool:
 
@@ -456,14 +486,21 @@ Cloud CLI Access Team
 
             <div class="warning">
                 <strong>⚠️ IMPORTANT - Set Your Password:</strong><br>
-                You will receive a separate email from AWS IAM Identity Center with a link to set your password.
-                Check your inbox (and spam folder) for an email with the subject:<br>
-                <em>"Invitation to join AWS IAM Identity Center"</em>
+                AWS does not automatically send a password setup email when users are created via API.<br>
+                <strong>Follow these steps to set your password:</strong>
             </div>
 
-            <h3>Getting Started:</h3>
+            <h3>Step 1: Set Your Password</h3>
             <div class="steps">
-                <div class="step">Set your password using the link from AWS</div>
+                <div class="step">Go to: <a href="{SSO_START_URL}">{SSO_START_URL}</a></div>
+                <div class="step">Enter your username: <strong>{user_data['username']}</strong></div>
+                <div class="step">Click <strong>"Forgot password?"</strong></div>
+                <div class="step">Check your email for the password reset link</div>
+                <div class="step">Follow the reset instructions to set your password</div>
+            </div>
+
+            <h3>Step 2: Login with CCC CLI</h3>
+            <div class="steps">
                 <div class="step">Install the CCC CLI tool</div>
                 <div class="step">Run: <code>ccc configure</code></div>
                 <div class="step">Run: <code>ccc login</code></div>
@@ -480,7 +517,9 @@ Cloud CLI Access Team
 """
 
     try:
-        ses.send_email(
+        print(f"Attempting to send welcome email to: {user_data['email']}")
+        print(f"Email FROM address: {FROM_EMAIL}")
+        response = ses.send_email(
             Source=FROM_EMAIL,
             Destination={'ToAddresses': [user_data['email']]},
             Message={
@@ -491,8 +530,10 @@ Cloud CLI Access Team
                 }
             }
         )
+        print(f"Welcome email sent successfully. MessageId: {response.get('MessageId')}")
     except Exception as e:
         print(f"Error sending welcome email: {e}")
+        print(f"Error details: {type(e).__name__}: {str(e)}")
 
 def send_denial_email(user_data):
     """Send denial notification to user"""
