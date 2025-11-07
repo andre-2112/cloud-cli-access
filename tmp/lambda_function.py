@@ -18,13 +18,6 @@ FROM_EMAIL = os.environ['FROM_EMAIL']
 ADMIN_EMAIL = os.environ['ADMIN_EMAIL']
 SECRET_KEY = os.environ['SECRET_KEY']
 
-# CORS headers for all responses
-CORS_HEADERS = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
-}
-
 def lambda_handler(event, context):
     """
     Single Lambda function handling:
@@ -35,32 +28,18 @@ def lambda_handler(event, context):
 
     print(f"Event: {json.dumps(event)}")
 
-    # Handle OPTIONS preflight requests
-    if event.get('requestContext', {}).get('http', {}).get('method') == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': CORS_HEADERS,
-            'body': ''
-        }
-
     # Determine action based on path
     path = event.get('rawPath', event.get('path', ''))
-    print(f"Request path: {path}")
 
     if path == '/register' or path == '/':
-        print("Handling registration request")
         return handle_registration(event)
     elif path == '/approve':
-        print("Handling approval request")
         return handle_approval(event)
     elif path == '/deny':
-        print("Handling denial request")
         return handle_denial(event)
     else:
-        print(f"Unknown path: {path}")
         return {
             'statusCode': 404,
-            'headers': CORS_HEADERS,
             'body': json.dumps({'error': 'Not found'})
         }
 
@@ -93,8 +72,6 @@ def handle_registration(event):
         'expires_at': (datetime.utcnow() + timedelta(days=7)).isoformat()
     }
 
-    print(f"Processing registration for: {user_data['username']} ({user_data['email']})")
-
     approve_token = create_signed_token(user_data, 'approve')
     deny_token = create_signed_token(user_data, 'deny')
 
@@ -105,13 +82,9 @@ def handle_registration(event):
     approve_url = f"{protocol}://{lambda_url}/approve?token={approve_token}"
     deny_url = f"{protocol}://{lambda_url}/deny?token={deny_token}"
 
-    print(f"Approve URL: {approve_url}")
-    print(f"Deny URL: {deny_url}")
-
     # Send email to admin
     try:
         send_admin_email(user_data, approve_url, deny_url)
-        print(f"Registration completed successfully for: {user_data['username']}")
     except Exception as e:
         print(f"Error sending email: {e}")
         return error_response(f'Failed to send email: {str(e)}', 500)
@@ -119,8 +92,8 @@ def handle_registration(event):
     return {
         'statusCode': 200,
         'headers': {
-            **CORS_HEADERS,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
         },
         'body': json.dumps({
             'message': 'Registration submitted successfully',
@@ -164,23 +137,17 @@ def handle_approval(event):
 
     # Create user in Identity Center
     try:
-        print(f"Creating user: {user_data['username']} ({user_data['email']})")
         user_id = create_identity_center_user(user_data)
-        print(f"User created successfully with ID: {user_id}")
 
         # Add user to group
-        print(f"Adding user to group: {CLI_GROUP_ID}")
         identitystore.create_group_membership(
             IdentityStoreId=IDENTITY_STORE_ID,
             GroupId=CLI_GROUP_ID,
             MemberId={'UserId': user_id}
         )
-        print(f"User added to group successfully")
 
         # Send welcome email
-        print(f"Sending welcome email to: {user_data['email']}")
         send_welcome_email(user_data)
-        print(f"Welcome email sent successfully")
 
         return html_response(f'''
             <html>
@@ -206,7 +173,7 @@ def handle_approval(event):
                     <p><strong>Name:</strong> {user_data["first_name"]} {user_data["last_name"]}</p>
                 </div>
                 <p>User has been created successfully.</p>
-                <p>They will receive a welcome email with instructions to set their password via the SSO portal.</p>
+                <p>They will receive an email to set their password.</p>
             </body>
             </html>
         ''', 200)
@@ -400,25 +367,17 @@ These links will expire in 7 days.
 </html>
 """
 
-    try:
-        print(f"Sending admin approval email to: {ADMIN_EMAIL}")
-        print(f"Email FROM address: {FROM_EMAIL}")
-        response = ses.send_email(
-            Source=FROM_EMAIL,
-            Destination={'ToAddresses': [ADMIN_EMAIL]},
-            Message={
-                'Subject': {'Data': subject},
-                'Body': {
-                    'Text': {'Data': text_body},
-                    'Html': {'Data': html_body}
-                }
+    ses.send_email(
+        Source=FROM_EMAIL,
+        Destination={'ToAddresses': [ADMIN_EMAIL]},
+        Message={
+            'Subject': {'Data': subject},
+            'Body': {
+                'Text': {'Data': text_body},
+                'Html': {'Data': html_body}
             }
-        )
-        print(f"Admin email sent successfully. MessageId: {response.get('MessageId')}")
-    except Exception as e:
-        print(f"Error sending admin email: {e}")
-        print(f"Error details: {type(e).__name__}: {str(e)}")
-        raise
+        }
+    )
 
 def send_welcome_email(user_data):
     """Send welcome email to approved user"""
@@ -433,15 +392,9 @@ Your registration has been approved.
 Username: {user_data['username']}
 Email: {user_data['email']}
 
-IMPORTANT - Complete Your Account Setup:
-
-Click the link below to set up your password:
-http://cca-registration-1762463059.s3-website-us-east-1.amazonaws.com/password-setup.html?username={user_data['username']}&sso_url={SSO_START_URL}
-
-This quick 3-step process will:
-1. Show you your username
-2. Take you to the AWS sign-in page
-3. Guide you through setting your password
+IMPORTANT - Set Your Password:
+You will receive a separate email from AWS IAM Identity Center with a link to set your password.
+Please check your inbox (and spam folder) for an email with the subject "Invitation to join AWS IAM Identity Center".
 
 After setting your password, you can log in using the CCC CLI tool:
 
@@ -486,23 +439,15 @@ Cloud CLI Access Team
             </div>
 
             <div class="warning">
-                <strong>IMPORTANT - Complete Your Account Setup:</strong><br>
-                One more step to get started! Click the button below to set up your password.
+                <strong>⚠️ IMPORTANT - Set Your Password:</strong><br>
+                You will receive a separate email from AWS IAM Identity Center with a link to set your password.
+                Check your inbox (and spam folder) for an email with the subject:<br>
+                <em>"Invitation to join AWS IAM Identity Center"</em>
             </div>
 
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="http://cca-registration-1762463059.s3-website-us-east-1.amazonaws.com/password-setup.html?username={user_data['username']}&sso_url={SSO_START_URL}"
-                   style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                    Set Up My Password →
-                </a>
-            </div>
-
-            <p style="text-align: center; color: #666; font-size: 14px;">
-                This will take less than a minute to complete.
-            </p>
-
-            <h3>After Setting Your Password:</h3>
+            <h3>Getting Started:</h3>
             <div class="steps">
+                <div class="step">Set your password using the link from AWS</div>
                 <div class="step">Install the CCC CLI tool</div>
                 <div class="step">Run: <code>ccc configure</code></div>
                 <div class="step">Run: <code>ccc login</code></div>
@@ -519,9 +464,7 @@ Cloud CLI Access Team
 """
 
     try:
-        print(f"Attempting to send welcome email to: {user_data['email']}")
-        print(f"Email FROM address: {FROM_EMAIL}")
-        response = ses.send_email(
+        ses.send_email(
             Source=FROM_EMAIL,
             Destination={'ToAddresses': [user_data['email']]},
             Message={
@@ -532,10 +475,8 @@ Cloud CLI Access Team
                 }
             }
         )
-        print(f"Welcome email sent successfully. MessageId: {response.get('MessageId')}")
     except Exception as e:
         print(f"Error sending welcome email: {e}")
-        print(f"Error details: {type(e).__name__}: {str(e)}")
 
 def send_denial_email(user_data):
     """Send denial notification to user"""
@@ -586,23 +527,20 @@ Cloud CLI Access Team
         print(f"Error sending denial email: {e}")
 
 def error_response(message, status_code):
-    """Return error response with CORS headers"""
+    """Return error response"""
     return {
         'statusCode': status_code,
         'headers': {
-            **CORS_HEADERS,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
         },
         'body': json.dumps({'error': message})
     }
 
 def html_response(html, status_code):
-    """Return HTML response with CORS headers"""
+    """Return HTML response"""
     return {
         'statusCode': status_code,
-        'headers': {
-            **CORS_HEADERS,
-            'Content-Type': 'text/html'
-        },
+        'headers': {'Content-Type': 'text/html'},
         'body': html
     }
